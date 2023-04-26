@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pv-claim-user
+  labels:
+    app: postgres
+    tier: database
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: user-db
+  name: user-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: user-db
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: user-db
+    spec:
+      containers:
+        - name: user-db
+          env:
+          - name: POSTGRES_DB
+            value: booksriver_user
+          - name: POSTGRES_PASSWORD
+            value: booksriver
+          - name: POSTGRES_USER
+            value: booksriver
+          - name: restart
+            value: unless-stopped
+          image: postgres
+          imagePullPolicy: ""
+          ports:
+          - containerPort: 5432
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-persistance-storage-user
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+        - name: postgres-persistance-storage-user
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim-user
+status: {}

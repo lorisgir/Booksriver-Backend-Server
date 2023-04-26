@@ -1,0 +1,44 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: gateway-server
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            maxAge: 3600
+      routes:
+        - id: user-server
+          uri: lb://USER-SERVER
+          predicates:
+            - Path=/user-server/**
+          filters:
+            - RewritePath=/user-server(?<segment>/?.*), $\{segment}
+        - id: book-server
+          uri: lb://BOOK-SERVER
+          predicates:
+            - Path=/book-server/**
+          filters:
+            - RewritePath=/book-server(?<segment>/?.*), $\{segment}
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    serviceUrl:
+      defaultZone: https://ghibo-eurekaserver.herokuapp.com/eureka
+  instance:
+    hostname: ghibo-gatewaykaserver.herokuapp.com
+    homePageUrl: https://ghibo-eurekaserver.herokuapp.com/
+    home-page-url-path: https://ghibo-eurekaserver.herokuapp.com/
+    metadataMap:
+      instanceId: ${spring.application.name}:${spring.application.instance_id:${server.port}:${random.value}}
+    prefer-ip-address: false

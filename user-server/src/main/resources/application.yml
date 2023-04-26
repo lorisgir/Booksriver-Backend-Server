@@ -1,0 +1,35 @@
+debug: true
+
+server:
+  port: 9001
+  error.include-message: always
+  error.include-binding-errors: always
+
+spring:
+  application:
+    name: user-server
+  datasource:
+    url: jdbc:postgresql://${DB_URL:localhost}:5432/${POSTGRES_DB:booksriver_user}
+    username: ${POSTGRES_USER:booksriver}
+    password: ${POSTGRES_PASSWORD:booksriver}
+  jpa:
+    hibernate.ddl-auto: update
+  rabbitmq.addresses: ${RABBITMQ_HOST:localhost}:5672
+
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+  api-docs:
+    enabled: true
+    path: /rest-api-docs
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${EUREKA_URL:localhost}:8761/eureka
+  instance:
+    prefer-ip-address: true
+    leaseRenewalIntervalInSeconds: 10
+    metadataMap:
+      instanceId: ${spring.application.name}:${spring.application.instance_id:${server.port}:${random.value}}

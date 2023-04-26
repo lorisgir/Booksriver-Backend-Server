@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: book-server
+  name: book-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: book-server
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: book-server
+    spec:
+      containers:
+      - env:
+        - name: DB_URL
+          value: book-db
+        - name: EUREKA_URL
+          value: eureka-server
+        - name: POSTGRES_DB
+          value: booksriver_book
+        - name: POSTGRES_PASSWORD
+          value: booksriver
+        - name: POSTGRES_USER
+          value: booksriver
+        - name: RABBITMQ_HOST
+          value: rabbitmq-container
+        image: booksriverserver_book-server:latest
+        imagePullPolicy: Never
+        name: book-server
+        ports:
+        - containerPort: 9002
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}

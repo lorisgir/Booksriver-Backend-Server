@@ -1,0 +1,18 @@
+server:
+  port: ${PORT:8761}
+
+spring:
+  application:
+    name: eureka-server
+
+eureka:
+  instance:
+    hostname: ${EUREKA_HOSTNAME:ghibo-eurekaserver.herokuapp.com}
+    prefer-ip-address: false
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    service-url:
+      defaultZone: ${EUREKA_URI:https://${eureka.instance.hostname}:${server.port}/eureka/}
+  server:
+    waitTimeInMsWhenSyncEmpty: 0

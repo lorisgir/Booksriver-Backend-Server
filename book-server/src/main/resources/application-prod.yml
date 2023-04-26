@@ -1,0 +1,39 @@
+debug: true
+
+server:
+  port: ${PORT:9002}
+  error.include-message: always
+  error.include-binding-errors: always
+
+spring:
+  application:
+    name: book-server
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate.ddl-auto: update
+  rabbitmq.addresses: amqps://vfwgbtkb:QWkqMmhmkUUFuVQNLsWCIvUsEaEXWMCQ@bonobo.rmq.cloudamqp.com/vfwgbtkb
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+  api-docs:
+    enabled: true
+    path: /rest-api-docs
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    serviceUrl:
+      defaultZone: https://ghibo-eurekaserver.herokuapp.com/eureka
+  instance:
+    non-secure-port: 80
+    hostname: ghibo-bookserver.herokuapp.com
+    homePageUrl: https://ghibo-eurekaserver.herokuapp.com/eureka
+    home-page-url-path: https://ghibo-eurekaserver.herokuapp.com/eureka
+    metadataMap:
+      instanceId: ${spring.application.name}:${spring.application.instance_id:${server.port}:${random.value}}
+    prefer-ip-address: false

@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-server
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            maxAge: 3600
+      routes:
+        - id: user-server
+          uri: lb://USER-SERVER
+          predicates:
+            - Path=/user-server/**
+          filters:
+            - RewritePath=/user-server(?<segment>/?.*), $\{segment}
+        - id: book-server
+          uri: lb://BOOK-SERVER
+          predicates:
+            - Path=/book-server/**
+          filters:
+            - RewritePath=/book-server(?<segment>/?.*), $\{segment}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${EUREKA_URL:localhost}:8761/eureka
+  instance:
+    prefer-ip-address: true
+    appname: gateway-server
+    metadataMap:
+      instanceId: ${spring.application.name}:${spring.application.instance_id:${server.port}:${random.value}}

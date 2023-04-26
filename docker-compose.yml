@@ -1,0 +1,84 @@
+version: '3'
+
+services:
+  rabbitmq-container:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+
+  user_db:
+    image: "postgres"
+    ports:
+      - "5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: booksriver_user
+      POSTGRES_USER: booksriver
+      POSTGRES_PASSWORD: booksriver
+      restart: unless-stopped
+
+  book_db:
+    image: "postgres"
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata2:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: booksriver_book
+      POSTGRES_USER: booksriver
+      POSTGRES_PASSWORD: booksriver
+      restart: unless-stopped
+
+  eureka-server:
+    build: ./eureka-server
+    ports:
+      - "8761:8761"
+  gateway-server:
+    build: ./gateway-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-server
+    environment:
+      EUREKA_URL: eureka-server
+
+  user-server:
+    build: ./user-server
+    ports:
+      - "9001:9001"
+    depends_on:
+      - eureka-server
+      - gateway-server
+      - user_db
+      - rabbitmq-container
+
+    environment:
+      POSTGRES_DB: booksriver_user
+      POSTGRES_USER: booksriver
+      POSTGRES_PASSWORD: booksriver
+      DB_URL: user_db
+      EUREKA_URL: eureka-server
+      RABBITMQ_HOST: rabbitmq-container
+
+  book-server:
+    build: ./book-server
+    ports:
+      - "9002:9002"
+    depends_on:
+      - eureka-server
+      - gateway-server
+      - book_db
+      - rabbitmq-container
+    environment:
+      POSTGRES_DB: booksriver_book
+      POSTGRES_USER: booksriver
+      POSTGRES_PASSWORD: booksriver
+      DB_URL: book_db
+      EUREKA_URL: eureka-server
+      RABBITMQ_HOST: rabbitmq-container
+volumes:
+  pgdata:
+  pgdata2:
