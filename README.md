@@ -6,6 +6,8 @@ Booksriver Backend Server is a Java SpringBoot application designed to support t
 
 The backend is built using a microservices architecture with Eureka for service discovery and a Gateway for routing requests. 
 
+<img src="https://raw.githubusercontent.com/lorisgir/BooksriverBooksriver-Backend-Server/main/.github/images/booksriverserver1.png" width="40%">
+
 ## Technologies Used 🛠️
 
 - Java SpringBoot
